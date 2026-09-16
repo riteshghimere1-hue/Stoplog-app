@@ -232,6 +232,7 @@ th, td {
     border: 1px solid var(--border-color);
     padding: 10px;
     text-align: center;
+    color: var(--neon-green);
 }
 
 th {
