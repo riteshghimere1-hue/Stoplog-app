@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCanals();
     loadStoplogs();
     setupEventListeners();
+    calculateValues();
 });
 
 function setupEventListeners() {
