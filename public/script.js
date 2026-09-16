@@ -36,10 +36,6 @@ const newCanalName = document.getElementById('new-canal-name');
 const saveCanalBtn = document.getElementById('save-canal-btn');
 const cancelCanalBtn = document.getElementById('cancel-canal-btn');
 
-const passwordModal = document.getElementById('password-modal');
-const passwordInput = document.getElementById('password-input');
-const savePasswordBtn = document.getElementById('save-password-btn');
-const cancelPasswordBtn = document.getElementById('cancel-password-btn');
 
 let editingCanalId = null;
 
