@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stoplog Quantity Recorder</title>
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00f3ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="black-translucent">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Stoplog Quantity Recorder</h1>
+
+        <!-- Form Section -->
+        <div class="card" id="form-container">
+            <h2 id="form-title">Add New Entry</h2>
+            <form id="stoplog-form">
+                <input type="hidden" id="entry-id">
+
+                <div class="form-group">
+                    <label>Canal Name</label>
+                    <div class="canal-input-group">
+                        <select id="canal_id" required></select>
+                        <button type="button" id="add-canal-btn" class="btn-small">+ New</button>
+                        <button type="button" id="edit-canal-btn" class="btn-small edit-canal">Edit</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="location" required placeholder="e.g., Beluwa Tail Escape">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>L (mm)</label>
+                        <input type="number" id="L" required min="1" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>H (mm)</label>
+                        <input type="number" id="H" required min="1" step="any">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>T (mm)</label>
+                        <input type="number" id="T" required min="1" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label>No</label>
+                        <input type="number" id="No" required min="1" step="1">
+                    </div>
+                </div>
+
+                <div class="calculated-box">
+                    <div>Total Height: <strong id="calc-total-height">0</strong> mm</div>
+                    <div>Quantity (m²): <strong id="calc-sqm">0.00</strong></div>
+                    <div>Quantity (m³): <strong id="calc-cum">0.0000</strong></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submit-btn">Save Entry</button>
+                    <button type="button" class="btn-secondary" id="cancel-btn" style="display: none;">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="card">
+            <div class="table-header">
+                <h2>Recorded Entries</h2>
+                <button id="export-btn" class="btn-success">Download Excel</button>
+            </div>
+            <div class="table-responsive">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <th>Location</th>
+                            <th>L (mm)</th>
+                            <th>H (mm)</th>
+                            <th>T (mm)</th>
+                            <th>No</th>
+                            <th>Total Height (mm)</th>
+                            <th>Quantity (m²)</th>
+                            <th>Quantity (m³)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing canal -->
+    <div id="canal-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="canal-modal-title">Add New Canal</h3>
+            <input type="text" id="new-canal-name" placeholder="Enter Canal Name">
+            <div class="modal-actions">
+                <button id="save-canal-btn" class="btn-primary">Save</button>
+                <button id="cancel-canal-btn" class="btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
