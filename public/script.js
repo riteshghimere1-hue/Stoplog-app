@@ -36,6 +36,11 @@ const newCanalName = document.getElementById('new-canal-name');
 const saveCanalBtn = document.getElementById('save-canal-btn');
 const cancelCanalBtn = document.getElementById('cancel-canal-btn');
 
+const passwordModal = document.getElementById('password-modal');
+const passwordInput = document.getElementById('password-input');
+const savePasswordBtn = document.getElementById('save-password-btn');
+const cancelPasswordBtn = document.getElementById('cancel-password-btn');
+
 let editingCanalId = null;
 
 // --- INIT ---
@@ -96,7 +101,7 @@ deleteCanalBtn.addEventListener('click', async () => {
     }
 
     try {
-        const res = await fetch(`${API_URL}/canals/${canalSelect.value}`, {
+        const res = await authedFetch(`${API_URL}/canals/${canalSelect.value}`, {
             method: 'DELETE'
         });
         if (res.ok) {
@@ -180,7 +185,7 @@ async function saveCanal() {
     const method = editingCanalId ? 'PUT' : 'POST';
 
     try {
-        const res = await fetch(url, {
+        const res = await authedFetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name })
@@ -283,7 +288,7 @@ async function handleFormSubmit(e) {
     const url = id ? `${API_URL}/stoplogs/${id}` : `${API_URL}/stoplogs`;
 
     try {
-        const res = await fetch(url, {
+        const res = await authedFetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -311,7 +316,7 @@ function resetForm() {
 // --- EDIT / DELETE ---
 async function editEntry(id) {
     try {
-        const res = await fetch(`${API_URL}/stoplogs`);
+        const res = await authedFetch(`${API_URL}/stoplogs`);
         const data = await res.json();
         const entry = data.find(row => row.id === id);
         if (!entry) return;
@@ -337,9 +342,39 @@ async function editEntry(id) {
 async function deleteEntry(id) {
     if (!confirm('Are you sure you want to delete this entry?')) return;
     try {
-        const res = await fetch(`${API_URL}/stoplogs/${id}`, { method: 'DELETE' });
+        const res = await authedFetch(`${API_URL}/stoplogs/${id}`, { method: 'DELETE' });
         if (res.ok) loadStoplogs();
     } catch (err) {
         console.error('Error deleting entry:', err);
     }
+}
+
+// --- PASSWORD HELPERS ---
+function getStoredPassword() {
+    return localStorage.getItem('editPassword') || '';
+}
+
+function setStoredPassword(pwd) {
+    localStorage.setItem('editPassword', pwd);
+}
+
+// Wraps fetch so all write requests automatically include the password header
+async function authedFetch(url, options = {}) {
+    const pwd = getStoredPassword();
+    options.headers = {
+        ...(options.headers || {}),
+        'X-Edit-Password': pwd
+    };
+    const res = await fetch(url, options);
+
+    // If unauthorized, prompt for password and retry once
+    if (res.status === 401) {
+        const entered = prompt('Editor password required:');
+        if (entered) {
+            setStoredPassword(entered);
+            options.headers['X-Edit-Password'] = entered;
+            return fetch(url, options);
+        }
+    }
+    return res;
 }

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_file, send_from_directory
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from io import BytesIO
+from functools import wraps
 import sqlite3
 import os
 
@@ -19,6 +20,16 @@ def get_db():
     conn.row_factory = sqlite3.Row  # Lets us access columns by name
     return conn
 
+def require_password(f):
+    """Decorator: only allow the request if the correct password is provided."""
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        password = request.headers.get('X-Edit-Password', '')
+        correct = os.environ.get('EDIT_PASSWORD', '')
+        if not correct or password != correct:
+            return jsonify({'error': 'Unauthorized. Wrong or missing password.'}), 401
+        return f(*args, **kwargs)
+    return wrapper
 
 def init_db():
     """Create tables if they don't exist yet."""
@@ -65,6 +76,7 @@ def get_canals():
 
 
 @app.route('/api/canals', methods=['POST'])
+@require_password
 def add_canal():
     name = request.json.get('name')
     try:
@@ -80,6 +92,7 @@ def add_canal():
 
 
 @app.route('/api/canals/<int:canal_id>', methods=['PUT'])
+@require_password
 def update_canal(canal_id):
     name = request.json.get('name')
     try:
@@ -92,6 +105,7 @@ def update_canal(canal_id):
         return jsonify({'error': 'Canal name already exists'}), 400
 
 @app.route('/api/canals/<int:canal_id>', methods=['DELETE'])
+@require_password
 def delete_canal(canal_id):
     conn = get_db()
     c = conn.cursor()
@@ -125,6 +139,7 @@ def get_stoplogs():
 
 
 @app.route('/api/stoplogs', methods=['POST'])
+@require_password
 def add_stoplog():
     data = request.json
     L, H, T, No = data['L'], data['H'], data['T'], data['No']
@@ -145,6 +160,7 @@ def add_stoplog():
 
 
 @app.route('/api/stoplogs/<int:entry_id>', methods=['PUT'])
+@require_password
 def update_stoplog(entry_id):
     data = request.json
     L, H, T, No = data['L'], data['H'], data['T'], data['No']
@@ -165,6 +181,7 @@ def update_stoplog(entry_id):
 
 
 @app.route('/api/stoplogs/<int:entry_id>', methods=['DELETE'])
+@require_password
 def delete_stoplog(entry_id):
     conn = get_db()
     conn.execute('DELETE FROM stoplogs WHERE id = ?', (entry_id,))
