@@ -250,10 +250,11 @@ def export_excel():
         download_name='Stoplog_Quantity.xlsx'
     )
 
+init_db()
 
 # --- START THE APP ---
 if __name__ == '__main__':
-    init_db()
+    
     port = int(os.environ.get('PORT', 5000))
     print(f"\n🚀 App running! Open http://localhost:{port} in your browser.\n")
     app.run(host='0.0.0.0', port=port, debug=True)
