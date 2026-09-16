@@ -31,6 +31,7 @@ const canalModal = document.getElementById('canal-modal');
 const canalModalTitle = document.getElementById('canal-modal-title');
 const addCanalBtn = document.getElementById('add-canal-btn');
 const editCanalBtn = document.getElementById('edit-canal-btn');
+const deleteCanalBtn = document.getElementById('delete-canal-btn');
 const newCanalName = document.getElementById('new-canal-name');
 const saveCanalBtn = document.getElementById('save-canal-btn');
 const cancelCanalBtn = document.getElementById('cancel-canal-btn');
@@ -82,6 +83,34 @@ function setupEventListeners() {
         canalModal.style.display = 'flex';
         setTimeout(() => newCanalName.focus(), 100);
     });
+
+    // --- CANAL: DELETE ---
+deleteCanalBtn.addEventListener('click', async () => {
+    if (!canalSelect.value) {
+        alert('Please select a canal from the dropdown to delete.');
+        return;
+    }
+    const canalName = canalSelect.options[canalSelect.selectedIndex].text;
+    if (!confirm(`Delete canal "${canalName}"?\n\nThis cannot be undone.`)) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/canals/${canalSelect.value}`, {
+            method: 'DELETE'
+        });
+        if (res.ok) {
+            await loadCanals();
+            loadStoplogs();
+        } else {
+            const errData = await res.json().catch(() => ({}));
+            alert(errData.error || 'Error deleting canal.');
+        }
+    } catch (err) {
+        console.error('Error deleting canal:', err);
+        alert('Network error. Check your connection.');
+    }
+});
 
     // --- CANAL MODAL: SAVE / CANCEL ---
     saveCanalBtn.addEventListener('click', saveCanal);

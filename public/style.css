@@ -333,6 +333,9 @@ tr:hover {
 
 .edit-canal { border-color: #fcee0a; color: #fcee0a; }
 
+.delete-canal { border-color: #ff3366; color: #ff3366; }
+.delete-canal:hover { background: #ff3366; color: #0a0b10; }
+
 /* Custom Scrollbar for Webkit browsers */
 ::-webkit-scrollbar {
     width: 8px;

@@ -91,6 +91,23 @@ def update_canal(canal_id):
     except sqlite3.IntegrityError:
         return jsonify({'error': 'Canal name already exists'}), 400
 
+@app.route('/api/canals/<int:canal_id>', methods=['DELETE'])
+def delete_canal(canal_id):
+    conn = get_db()
+    c = conn.cursor()
+    # Check if there are any stoplog entries linked to this canal
+    c.execute('SELECT COUNT(*) FROM stoplogs WHERE canal_id = ?', (canal_id,))
+    count = c.fetchone()[0]
+    if count > 0:
+        conn.close()
+        return jsonify({
+            'error': f'Cannot delete: this canal has {count} stoplog entries. Delete those entries first.'
+        }), 400
+
+    c.execute('DELETE FROM canals WHERE id = ?', (canal_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({'deleted': 1})
 
 # --- API: STOPLOGS ---
 @app.route('/api/stoplogs', methods=['GET'])
